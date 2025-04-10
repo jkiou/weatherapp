@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body_class %}weather-bg {{ description|lower|cut:' ' }}{% endblock %}
+
+{% block content %}
+<main>
+    <section class="side-container">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="search-container">
+                <div class="weather-icon">
+                    <i class="bi bi-cloud-fog"></i>
+                </div>
+                <input type="text" name="city" class="geo-input" placeholder="Enter city..." value="{{ city }}">
+                <button type="submit" class="search-button">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+
+        <div class="current-weather">
+            <h1 class="temperature">{{ current_temperature|default:"--" }}°</h1>
+            <p class="feels-like">Feels like: {{ feels_like_temperature|default:"--" }}°</p>
+            
+            <div class="weather-stats">
+                <div class="stat">
+                    <span class="value">{{ humidity|default:"--" }}%</span>
+                    <span class="label">Humidity</span>
+                </div>
+                <div class="stat">
+                    <span class="value">{{ clouds|default:"--" }}%</span>
+                    <span class="label">Cloud Cover</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="main-container">
+        <div class="header">
+            <h2>Weather Forecast</h2>
+            <h1>{{ description|title }}</h1>
+            <div class="location">
+                <i class="bi bi-geo-alt"></i>
+                <span>{{ city }}, {{ country }} {{ date }} {{ time }}</span>
+            </div>
+        </div>
+
+        <div class="weather-info">
+            <p>
+                Wind {{ wind_speed }} kilometers per hour. Pressure is {{ pressure }} mb.<br>
+                Visibility is {{ visibility }}. Maximum temperature is {{ temp_max }}°, minimum is {{ temp_min }}°.
+            </p>
+        </div>
+
+        <div class="forecast-container">
+            <div class="chart-container">
+                <canvas id="chart"></canvas>
+            </div>
+            
+            <div class="forecast-list">
+                {% for forecast in forecasts %}
+                <div class="forecast-item">
+                    <span class="time">{{ forecast.time }}</span>
+                    <div class="forecast-details">
+                        <span class="temp">{{ forecast.temp }}°</span>
+                        <div class="extra-details">
+                            <span class="humidity">H: {{ forecast.humidity }}%</span>
+                            <span class="clouds">C: {{ forecast.clouds }}%</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/chartsetup.js' %}"></script>
+{% endblock %}
